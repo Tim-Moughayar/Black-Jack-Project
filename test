@@ -1,0 +1,56 @@
+import random
+
+class Blackjack:
+
+    def __init__(self):
+        self.player_hand = []
+        self.dealer_hand = []
+        self.player_score = 0
+        self.dealer_score = 0
+        self.winner = None
+
+    def deal_cards(self):
+        for i in range(2):
+            card = random.randint(1, 13)
+            self.player_hand.append(card)
+
+    def calculate_score(self):
+        for card in self.player_hand:
+            self.player_score += card
+
+    def calculate_dealer_score(self):
+        for card in self.dealer_hand:
+            self.dealer_score += card
+
+    def determine_winner(self):
+        if self.player_score > self.dealer_score:
+            return "Player"
+        elif self.player_score < self.dealer_score:
+            return "Dealer"
+        else:
+            return None
+
+    def run(self):
+        while self.player_score < 21 and self.dealer_score < 21:
+            if self.player_hand[-1] > self.dealer_hand[-1]:
+                self.player_hand.pop()
+            else:
+                self.dealer_hand.pop()
+
+            if self.player_hand:
+                self.deal_cards()
+
+            if self.player_hand.size() == 2:
+                self.calculate_score()
+
+            if self.dealer_hand.size() == 2:
+                self.calculate_dealer_score()
+
+            if self.determine_winner():
+                return self.determine_winner()
+
+        return self.determine_winner()
+
+if __name__ == "__main__":
+    blackjack = Blackjack()
+    blackjack.run()
