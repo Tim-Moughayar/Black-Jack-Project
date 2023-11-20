@@ -3,6 +3,10 @@ from tkinter import messagebox
 from tkinter.messagebox import askyesno
 import random
 
+"""References:
+    * https://stackoverflow.com/questions/61639278/to-detect-button-press-in-python-tkinter-module
+    * https://www.geeksforgeeks.org/blackjack-console-game-using-python/
+    """
 
 class BlackjackGame:
     def __init__(self, master):
@@ -17,6 +21,7 @@ class BlackjackGame:
 
         self.player_bust = False
         self.dealer_bust = False
+        self.player_stand = False
 
         self.create_widgets()
 
@@ -69,6 +74,10 @@ class BlackjackGame:
             self.end_game("Player wins with Blackjack!")
         elif dealer_value == 21:
             self.end_game("Dealer wins with Blackjack!")
+        elif player_value > dealer_value and self.player_stand is True:
+            self.end_game("Push! Player wins!")
+        elif player_value <= dealer_value and self.player_stand is True:
+            self.end_game("Push! Dealer wins!")
 
     def end_game(self, message):
         messagebox.showinfo("Results", message)
@@ -91,6 +100,7 @@ class BlackjackGame:
             self.dealer_hand.append(self.deck.pop())
 
         self.dealer_bust = self.calculate_hand_value(self.dealer_hand) > 21
+        self.player_stand = True
         self.update_display()
 
 
