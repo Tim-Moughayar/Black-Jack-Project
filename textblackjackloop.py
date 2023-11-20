@@ -1,0 +1,104 @@
+import tkinter as tk
+from tkinter import messagebox
+from tkinter.messagebox import askyesno
+import random
+
+
+class BlackjackGame:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Blackjack Game")
+
+        self.deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4
+        random.shuffle(self.deck)
+
+        self.player_hand = [self.deck.pop(), self.deck.pop()]
+        self.dealer_hand = [self.deck.pop(), self.deck.pop()]
+
+        self.player_bust = False
+        self.dealer_bust = False
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.player_label = tk.Label(self.master, text="Player's Hand:")
+        self.player_label.grid(row=0, column=0, padx=10, pady=10)
+
+        self.dealer_label = tk.Label(self.master, text="Dealer's Hand:")
+        self.dealer_label.grid(row=1, column=0, padx=10, pady=10)
+
+        self.hit_button = tk.Button(self.master, text="Hit", command=self.hit)
+        self.hit_button.grid(row=2, column=0, padx=10, pady=10)
+
+        self.stand_button = tk.Button(self.master, text="Stand", command=self.stand)
+        self.stand_button.grid(row=2, column=1, padx=10, pady=10)
+
+        self.quit_button = tk.Button(self.master, text="Quit", command=self.master.destroy)
+        self.quit_button.grid(row=2, column=2, padx=10, pady=10)
+
+        self.update_display()
+
+    def calculate_hand_value(self, hand):
+        value = sum(hand)
+        num_aces = hand.count(11)
+
+        while value > 21 and num_aces:
+            value -= 10
+            num_aces -= 1
+
+        return value
+
+    def update_display(self):
+        player_value = self.calculate_hand_value(self.player_hand)
+        dealer_value = self.calculate_hand_value(self.dealer_hand)
+
+        player_text = f"Player's Hand: {self.player_hand} ({player_value})"
+        dealer_text = f"Dealer's Hand: {self.dealer_hand} ({dealer_value})"
+
+        self.player_label.config(text=player_text)
+        self.dealer_label.config(text=dealer_text)
+
+        if player_value > 21:
+            self.player_bust = True
+            self.end_game("Player busts! Dealer wins.")
+        elif self.dealer_bust:
+            self.end_game("Dealer busts! Player wins.")
+        elif player_value == dealer_value == 21:
+            self.end_game("It's a tie! Both have Blackjack!")
+        elif player_value == 21:
+            self.end_game("Player wins with Blackjack!")
+        elif dealer_value == 21:
+            self.end_game("Dealer wins with Blackjack!")
+
+    def end_game(self, message):
+        messagebox.showinfo("Results", message)
+        answer = messagebox.askyesno(title="Game Over", message="Do you want to play again?")
+        if answer:
+            self.player_hand = 0
+            self.dealer_hand = 0
+            self.player_label.config(text= "")
+            self.dealer_label.config(text= "")
+            BlackjackGame(root)
+        else:
+            self.master.destroy()
+
+    def hit(self):
+        self.player_hand.append(self.deck.pop())
+        self.update_display()
+
+    def stand(self):
+        while self.calculate_hand_value(self.dealer_hand) < 17:
+            self.dealer_hand.append(self.deck.pop())
+
+        self.dealer_bust = self.calculate_hand_value(self.dealer_hand) > 21
+        self.update_display()
+
+
+# Create the main window
+root = tk.Tk()
+
+# Create and run the Blackjack game
+game = BlackjackGame(root)
+
+# Start the GUI event loop
+root.mainloop()
