@@ -3,10 +3,17 @@ from tkinter import messagebox
 from tkinter.messagebox import askyesno
 import random
 
-"""References:
+"""
+Team 4:
+Timothy El Moughayar
+Frank Boxenbaum
+Tyler Reynolds
+
+References:
     * https://stackoverflow.com/questions/61639278/to-detect-button-press-in-python-tkinter-module
     * https://www.geeksforgeeks.org/blackjack-console-game-using-python/
     """
+
 
 class BlackjackGame:
     def __init__(self, master):
@@ -27,10 +34,10 @@ class BlackjackGame:
 
     def create_widgets(self):
         self.player_label = tk.Label(self.master, text="Player's Hand:")
-        self.player_label.grid(row=0, column=0, padx=10, pady=10)
+        self.player_label.grid(row=1, column=0, padx=10, pady=10)
 
         self.dealer_label = tk.Label(self.master, text="Dealer's Hand:")
-        self.dealer_label.grid(row=1, column=0, padx=10, pady=10)
+        self.dealer_label.grid(row=0, column=0, padx=10, pady=10)
 
         self.hit_button = tk.Button(self.master, text="Hit", command=self.hit)
         self.hit_button.grid(row=2, column=0, padx=10, pady=10)
@@ -57,11 +64,11 @@ class BlackjackGame:
         player_value = self.calculate_hand_value(self.player_hand)
         dealer_value = self.calculate_hand_value(self.dealer_hand)
 
-        player_text = f"Player's Hand: {self.player_hand} ({player_value})"
         dealer_text = f"Dealer's Hand: {self.dealer_hand} ({dealer_value})"
+        player_text = f"Player's Hand: {self.player_hand} ({player_value})"
 
-        self.player_label.config(text=player_text)
         self.dealer_label.config(text=dealer_text)
+        self.player_label.config(text=player_text)
 
         if player_value > 21:
             self.player_bust = True
@@ -75,9 +82,11 @@ class BlackjackGame:
         elif dealer_value == 21:
             self.end_game("Dealer wins with Blackjack!")
         elif player_value > dealer_value and self.player_stand is True:
-            self.end_game("Push! Player wins!")
-        elif player_value <= dealer_value and self.player_stand is True:
-            self.end_game("Push! Dealer wins!")
+            self.end_game("Player wins!")
+        elif player_value < dealer_value and self.player_stand is True:
+            self.end_game("Dealer wins!")
+        elif player_value == dealer_value and self.player_stand is True:
+            self.end_game("Tie!")
 
     def end_game(self, message):
         messagebox.showinfo("Results", message)
