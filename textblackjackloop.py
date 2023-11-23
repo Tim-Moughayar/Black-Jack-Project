@@ -1,23 +1,37 @@
-import tkinter as tk
-from tkinter import messagebox
-from tkinter.messagebox import askyesno
-import random
-
 """
-Team 4:
+This is a simple blackjack game, created using the tkinter library.
+
+Input:
+    User mouse
+
+
+Output:
+    Blackjack game
+
+
+References:
+ * https://stackoverflow.com/questions/61639278/to-detect-button-press-in-python-tkinter-module
+ * https://www.geeksforgeeks.org/blackjack-console-game-using-python/
+
+
+CIS 216 Team 4:
 Timothy El Moughayar
 Frank Boxenbaum
 Tyler Reynolds
 
-References:
-    * https://stackoverflow.com/questions/61639278/to-detect-button-press-in-python-tkinter-module
-    * https://www.geeksforgeeks.org/blackjack-console-game-using-python/
-    """
+"""
+
+import tkinter as tk
+from tkinter import messagebox
+import random
 
 
 class BlackjackGame:
+    """Creates blackjack game class"""
     def __init__(self, master):
+        """Initializes deck of cards and deals hands to player and dealer."""
         self.master = master
+        master.geometry("800x600")
         self.master.title("Blackjack Game")
 
         self.deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4
@@ -33,11 +47,12 @@ class BlackjackGame:
         self.create_widgets()
 
     def create_widgets(self):
+        """Creates the on screen text and buttons."""
         self.player_label = tk.Label(self.master, text="Player's Hand:")
         self.player_label.grid(row=1, column=0, padx=10, pady=10)
 
         self.dealer_label = tk.Label(self.master, text="Dealer's Hand:")
-        self.dealer_label.grid(row=0, column=0, padx=10, pady=10)
+        self.dealer_label.grid(row=0, column=0, padx=20, pady=10)
 
         self.hit_button = tk.Button(self.master, text="Hit", command=self.hit)
         self.hit_button.grid(row=2, column=0, padx=10, pady=10)
@@ -51,6 +66,7 @@ class BlackjackGame:
         self.update_display()
 
     def calculate_hand_value(self, hand):
+        """Calculate the value of the player and dealer's hands."""
         value = sum(hand)
         num_aces = hand.count(11)
 
@@ -61,6 +77,7 @@ class BlackjackGame:
         return value
 
     def update_display(self):
+        """Updates the game area display with the current cards and decides the game outcome."""
         player_value = self.calculate_hand_value(self.player_hand)
         dealer_value = self.calculate_hand_value(self.dealer_hand)
 
@@ -89,22 +106,26 @@ class BlackjackGame:
             self.end_game("Tie!")
 
     def end_game(self, message):
+        """Displays the results of the game round and asks if the user want to play again or quit."""
         messagebox.showinfo("Results", message)
         answer = messagebox.askyesno(title="Game Over", message="Do you want to play again?")
         if answer:
             self.player_hand = 0
             self.dealer_hand = 0
-            self.player_label.config(text= "")
-            self.dealer_label.config(text= "")
+            self.player_label.config(text="")
+            self.dealer_label.config(text="")
             BlackjackGame(root)
         else:
+            messagebox.showinfo("Goodbye", message="Thanks for playing!")
             self.master.destroy()
 
     def hit(self):
+        """Adds another card from the deck to the player's hand."""
         self.player_hand.append(self.deck.pop())
         self.update_display()
 
     def stand(self):
+        """The player declines to draw another card and the game progresses to the outcome."""
         while self.calculate_hand_value(self.dealer_hand) < 17:
             self.dealer_hand.append(self.deck.pop())
 
@@ -113,11 +134,8 @@ class BlackjackGame:
         self.update_display()
 
 
-# Create the main window
-root = tk.Tk()
-
-# Create and run the Blackjack game
-game = BlackjackGame(root)
-
-# Start the GUI event loop
-root.mainloop()
+"""Creates window, launches game, and runs loops the GUI."""
+if __name__ == "__main__":
+    root = tk.Tk()
+    game = BlackjackGame(root)
+    root.mainloop()
