@@ -31,8 +31,9 @@ class BlackjackGame:
     def __init__(self, master):
         """Initializes deck of cards and deals hands to player and dealer."""
         self.master = master
-        master.geometry("800x600")
+        self.master.geometry("800x600")
         self.master.title("Blackjack Game")
+        self.master.configure(background="green")
 
         self.deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4
         random.shuffle(self.deck)
@@ -48,20 +49,20 @@ class BlackjackGame:
 
     def create_widgets(self):
         """Creates the on screen text and buttons."""
-        self.player_label = tk.Label(self.master, text="Player's Hand:")
-        self.player_label.grid(row=1, column=0, padx=10, pady=10)
+        self.dealer_frame = tk.LabelFrame(self.master, text="Dealer", bd=0, height=100, width=200)
+        self.dealer_frame.grid(row=0, column=0, padx=(20, 100), ipadx=20)
 
-        self.dealer_label = tk.Label(self.master, text="Dealer's Hand:")
-        self.dealer_label.grid(row=0, column=0, padx=20, pady=10)
-
-        self.hit_button = tk.Button(self.master, text="Hit", command=self.hit)
-        self.hit_button.grid(row=2, column=0, padx=10, pady=10)
-
-        self.stand_button = tk.Button(self.master, text="Stand", command=self.stand)
-        self.stand_button.grid(row=2, column=1, padx=10, pady=10)
+        self.player_frame = tk.LabelFrame(self.master, text="Player", bd=0, height=100, width=200)
+        self.player_frame.grid(row=0, column=1, padx=0, ipadx=20)
 
         self.quit_button = tk.Button(self.master, text="Quit", command=self.master.destroy)
-        self.quit_button.grid(row=2, column=2, padx=10, pady=10)
+        self.quit_button.grid(row=2, column=0, padx=(20, 100), pady=30, sticky=tk.W)
+
+        self.hit_button = tk.Button(self.master, text="Hit", command=self.hit)
+        self.hit_button.grid(row=2, column=1, padx=(0, 90), pady=30, sticky=tk.W+tk.E)
+
+        self.stand_button = tk.Button(self.master, text="Stand", command=self.stand)
+        self.stand_button.grid(row=2, column=2, sticky=tk.W+tk.E, padx=(0, 100), pady=30)
 
         self.update_display()
 
@@ -84,8 +85,8 @@ class BlackjackGame:
         dealer_text = f"Dealer's Hand: {self.dealer_hand} ({dealer_value})"
         player_text = f"Player's Hand: {self.player_hand} ({player_value})"
 
-        self.dealer_label.config(text=dealer_text)
-        self.player_label.config(text=player_text)
+        self.dealer_frame.config(text=dealer_text)
+        self.player_frame.config(text=player_text)
 
         if player_value > 21:
             self.player_bust = True
@@ -112,9 +113,9 @@ class BlackjackGame:
         if answer:
             self.player_hand = 0
             self.dealer_hand = 0
-            self.player_label.config(text="")
-            self.dealer_label.config(text="")
-            BlackjackGame(root)
+            self.player_frame.config(text="")
+            self.dealer_frame.config(text="")
+            BlackjackGame(self.master)
         else:
             messagebox.showinfo("Goodbye", message="Thanks for playing!")
             self.master.destroy()
