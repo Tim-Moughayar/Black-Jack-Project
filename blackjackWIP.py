@@ -104,8 +104,6 @@ class BlackjackGame:
 
         self.player_hand = [self.deck.pop(), self.deck.pop()]
         self.dealer_hand = [self.deck.pop(), self.deck.pop()]
-        self.dealer_hand_values = []
-        self.player_hand_values = []
 
     def update_display(self):
         """Updates the game area display with the current cards and decides the game outcome."""
@@ -123,31 +121,31 @@ class BlackjackGame:
         print(self.dealer_hand_values)
         print(self.player_hand_values)
 
-        player_total = self.calculate_hand_value(self.player_hand_values)
-        dealer_total = self.calculate_hand_value(self.dealer_hand_values)
+        self.player_total = self.calculate_hand_value(self.player_hand_values)
+        self.dealer_total = self.calculate_hand_value(self.dealer_hand_values)
 
-        self.dealer_text = f"Dealer's Hand:  {self.dealer_hand_values} Total: {dealer_total}"
-        self.player_text = f"Player's Hand: {self.player_hand_values} Total: {player_total}"
+        self.dealer_text = f"Dealer's Hand:  {self.dealer_hand_values} Total: {self.dealer_total}"
+        self.player_text = f"Player's Hand: {self.player_hand_values} Total: {self.player_total}"
 
         self.dealer_frame.config(text=self.dealer_text)
         self.player_frame.config(text=self.player_text)
 
-        if player_total > 21:
+        if self.player_total > 21:
             self.player_bust = True
             self.end_game("Player busts! Dealer wins.")
         elif self.dealer_bust:
             self.end_game("Dealer busts! Player wins.")
-        elif player_total == dealer_total == 21:
+        elif self.player_total == self.dealer_total == 21:
             self.end_game("It's a tie! Both have Blackjack!")
-        elif player_total == 21:
+        elif self.player_total == 21:
             self.end_game("Player wins with Blackjack!")
-        elif dealer_total == 21:
+        elif self.dealer_total == 21:
             self.end_game("Dealer wins with Blackjack!")
-        elif player_total > dealer_total and self.player_stand is True:
+        elif self.player_total > self.dealer_total and self.player_stand is True:
             self.end_game("Player wins!")
-        elif player_total < dealer_total and self.player_stand is True:
+        elif self.player_total < self.dealer_total and self.player_stand is True:
             self.end_game("Dealer wins!")
-        elif player_total == dealer_total and self.player_stand is True:
+        elif self.player_total == self.dealer_total and self.player_stand is True:
             self.end_game("Tie!")
 
     def end_game(self, message):
@@ -155,8 +153,8 @@ class BlackjackGame:
         messagebox.showinfo("Results", message)
         answer = messagebox.askyesno(title="Game Over", message="Do you want to play again?")
         if answer:
-            self.player_hand = 0
-            self.dealer_hand = 0
+            self.player_hand = []
+            self.dealer_hand = []
             self.player_frame.config(text="")
             self.dealer_frame.config(text="")
             BlackjackGame(self.master)
@@ -171,13 +169,12 @@ class BlackjackGame:
 
     def stand(self):
         """The player declines to draw another card and the game progresses to the outcome."""
-        while self.calculate_hand_value(self.dealer_hand_value) < 17:
-            self.dealer_hand_value.append(self.deck.pop())
+        while self.calculate_hand_value(self.dealer_hand_values) < 17:
+            self.dealer_hand.append(self.deck.pop())
 
-        self.dealer_bust = self.calculate_hand_value(self.dealer_hand) > 21
+        self.dealer_bust = self.calculate_hand_value(self.dealer_hand_values) > 21
         self.player_stand = True
         self.update_display()
-
 
 """Creates window, launches game, and runs loops the GUI."""
 if __name__ == "__main__":
