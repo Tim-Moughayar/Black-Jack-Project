@@ -47,32 +47,36 @@ class BlackjackGame:
         self.player_bust = False
         self.dealer_bust = False
         self.player_stand = False
+        self.reset_table = False
 
         self.create_widgets()
 
     def create_widgets(self):
-        """Creates the on screen text and buttons."""   
+        """Creates the on screen text, buttons and frames."""
 
         self.dealer_frame = tk.LabelFrame(self.master, text="Dealer", bd=0, height=100, width=200)
-        self.dealer_frame.grid(row=0, column=1, padx=(20, 100))
+        self.dealer_frame.pack(pady=15)
 
         self.player_frame = tk.LabelFrame(self.master, text="Player", bd=0, height=100, width=200)
-        self.player_frame.grid(row=1, column=1, padx=(20, 100), pady=15)
+        self.player_frame.pack(pady=(0, 15))
 
-        self.quit_button = tk.Button(self.master, text="Quit", command=self.master.destroy)
-        self.quit_button.grid(row=2, column=0, padx=(20, 100), pady=30, sticky=tk.W)
+        self.button_frame = tk.Frame(self.master, bg="green")
+        self.button_frame.pack()
 
-        self.hit_button = tk.Button(self.master, text="Hit", command=self.hit)
-        self.hit_button.grid(row=2, column=1, padx=(0, 90), pady=30, sticky=tk.W+tk.E)
+        self.quit_button = tk.Button(self.button_frame, text="Quit", command=self.master.destroy)
+        self.quit_button.pack(side="left", padx=(0, 100), pady=30, ipadx=20)
 
-        self.stand_button = tk.Button(self.master, text="Stand", command=self.stand)
-        self.stand_button.grid(row=2, column=2, sticky=tk.W+tk.E, padx=(0, 100), pady=30)
+        self.hit_button = tk.Button(self.button_frame, text="Hit", command=self.hit)
+        self.hit_button.pack(side="left", padx=(20, 0), pady=30, ipadx=30)
+
+        self.stand_button = tk.Button(self.button_frame, text="Stand", command=self.stand)
+        self.stand_button.pack(side="left", padx=(10, 0), pady=30, ipadx=20)
 
         self.player_label = []
 
         for iteration, card_name in enumerate(self.player_hand):
             self.player_image = (self.resize_cards(f'images/cards/{card_name}.png'))
-            self.player_label.append(tk.Label(self.player_frame, image=self.player_image, ))
+            self.player_label.append(tk.Label(self.player_frame, image=self.player_image))
             player_card = self.player_label[iteration]
             player_card.image = self.player_image
             player_card.pack(pady=20, padx=15, side=tk.LEFT)
@@ -123,10 +127,8 @@ class BlackjackGame:
         for card in hand:
             if card == 11 or card == 12 or card == 13:
                 total += 10
-
             elif card == 14:
                 total += 11
-
             else:
                 total += card
 
@@ -136,16 +138,18 @@ class BlackjackGame:
         return total
 
     def calculate_hand_values(self):
+        """Calculate the value of a hand of cards for blackjack."""
         self.dealer_hand_values = []
         self.player_hand_values = []
 
         for card in self.dealer_hand:
-            self.dealer_hand_values.append(int(card.split("_", 1) [0]))
+            self.dealer_hand_values.append(int(card.split("_", 1)[0]))
+
         for card in self.player_hand:
-            self.player_hand_values.append(int(card.split("_", 1) [0]))
+            self.player_hand_values.append(int(card.split("_", 1)[0]))
 
     def update_display(self):
-        """Updates the game area display with the current cards and decides the game outcome."""
+        """Updates the game area display with the current cards and scores."""
 
         self.calculate_hand_values()
 
@@ -160,10 +164,10 @@ class BlackjackGame:
             .replace("14", "Ace")
             .replace("13", "King")
             .replace("12", "Queen")
-            .replace("11", "Jack")) 
+            .replace("11", "Jack"))
             for text in player_hand_text]
 
-        player_hand_text = '[%s]'%', '.join(map(str, player_hand_text))
+        player_hand_text = '[%s]' % ', '.join(map(str, player_hand_text))
 
         dealer_hand_text = [(text
             .replace("_", " ")
@@ -173,13 +177,15 @@ class BlackjackGame:
             .replace("11", "Jack"))
             for text in dealer_hand_text]
 
-        dealer_hand_text = '[%s]'%', '.join(map(str, dealer_hand_text))
-
+        dealer_hand_text = '[%s]' % ', '.join(map(str, dealer_hand_text))
         self.dealer_text = f"Dealer's Hand:  {dealer_hand_text} Total: {self.dealer_total}"
         self.player_text = f"Player's Hand: {player_hand_text} Total: {self.player_total}"
 
-        self.dealer_frame.config(text=self.dealer_text)
-        self.player_frame.config(text=self.player_text)
+        if self.reset_table is False:
+            self.dealer_frame.config(text=self.dealer_text)
+            self.player_frame.config(text=self.player_text)
+        else:
+            pass
 
         if self.player_total == self.dealer_total == 21:
             self.end_game("It's a tie! Both have Blackjack!")
@@ -190,17 +196,17 @@ class BlackjackGame:
 
     def end_game(self, message):
         """Displays the results of the game round and asks if the user want to play again or quit."""
+        self.reset_table = True
         messagebox.showinfo("Results", message)
         answer = messagebox.askyesno(title="Game Over", message="Do you want to play again?")
         if answer:
             self.player_hand = []
             self.dealer_hand = []
-            self.player_frame.config(text="")
-            self.dealer_frame.config(text="")
-            for card in self.dealer_label:
-                card.destroy()
-            for card in self.player_label:
-                card.destroy()
+            self.player_total = 0
+            self.dealer_total = 0
+            self.player_frame.destroy()
+            self.dealer_frame.destroy()
+            self.button_frame.destroy()
             BlackjackGame(self.master)
         else:
             messagebox.showinfo("Goodbye", message="Thanks for playing!")
@@ -210,7 +216,7 @@ class BlackjackGame:
         """Adds another card from the deck to the player's hand."""
         self.player_hand.append(self.deck.pop())
         card = self.player_hand[-1]
-
+check_victory
         self.player_image = (self.resize_cards(f'images/cards/{card}.png'))
         card = tk.Label(self.player_frame, image=self.player_image)
         card.image = self.player_image
@@ -241,7 +247,7 @@ class BlackjackGame:
         self.update_display()
 
     def check_victory(self):
-        """Check victory conditions."""
+        """Checks the victory conditions."""
         if self.player_total > 21:
             self.player_bust = True
             self.end_game("Player busts! Dealer wins.")
@@ -259,6 +265,7 @@ class BlackjackGame:
             self.end_game("Dealer wins!")
         elif self.player_total == self.dealer_total and self.player_stand is True:
             self.end_game("Tie!")
+
 
 """Creates window, launches game, and runs loops the GUI."""
 if __name__ == "__main__":
