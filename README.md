@@ -3,7 +3,7 @@
 Blackjack Project for CIS 216
 Frank Boxenbaum, Tyler Reynolds, Timothy El Moughayar
 
-USE:
+USE: <br>
 black_jack_finalversion.py <br>
 images.zip
 
