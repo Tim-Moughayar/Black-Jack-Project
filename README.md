@@ -3,6 +3,10 @@
 Blackjack Project for CIS 216
 Frank Boxenbaum, Tyler Reynolds, Timothy El Moughayar
 
+USE:
+black_jack_finalversion.py
+images.zip
+
 Frank Boxenbaum: Note Taker, Game Logic
 Tyler Reynolds: Visual Design
 Timothy El Moughayar: GUI
